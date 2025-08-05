@@ -1,59 +1,35 @@
-// App.jsx
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-// Pages
-import Home from "../pages/Home";
-import Signup from "../pages/Signup";
-import Signin from "../pages/Signin";
-import Dashboard from "../pages/Dashboard";
-import Layout from "../components/Layout";
-import ProtectedRoute from "../components/ProtectedRoute";
-
-// Service pages (replace with real components if needed)
-const SSH = () => <div>SSH Access Page</div>;
-const HTML = () => <div>HTML Hosting Page</div>;
-const PHP = () => <div>PHP Hosting Page</div>;
-const ReactHosting = () => <div>React Hosting Page</div>;
-
-// Other placeholder pages
-const Blogs = () => <div>Blogs Page</div>;
-const About = () => <div>About Us Page</div>;
-const Contact = () => <div>Contact Page</div>;
-const Pricing = () => <div>Pricing Page</div>;
-const Support = () => <div>Support Page</div>;
-const Features = () => <div>Features Page</div>;
-const Stories = () => <div>Client Stories Page</div>;
-
-function App() {
+const Dashboard = () => {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Signin />} />
-        <Route path="/blogs" element={<Blogs />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/support" element={<Support />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/stories" element={<Stories />} />
+    <>
+      <h1 className="text-4xl font-bold text-gray-800 mb-6">Welcome Back 👋</h1>
+      <p className="text-gray-500 mb-10">Manage your hosting, services, and deployments all in one place.</p>
 
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/dashboard" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="services/ssh" element={<SSH />} />
-            <Route path="services/html" element={<HTML />} />
-            <Route path="services/php" element={<PHP />} />
-            <Route path="services/react" element={<ReactHosting />} />
-          </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Link to="/dashboard/services/ssh" className="bg-white shadow rounded-xl p-6 hover:shadow-xl transition">
+          <h3 className="text-lg font-semibold text-purple-600">SSH Shell</h3>
+          <p className="text-sm text-gray-500">Secure access to your VMs</p>
+        </Link>
+
+        <Link to="/dashboard/services/html" className="bg-white shadow rounded-xl p-6 hover:shadow-xl transition">
+          <h3 className="text-lg font-semibold text-orange-600">HTML Hosting</h3>
+          <p className="text-sm text-gray-500">Deploy static websites</p>
+        </Link>
+
+        <Link to="/dashboard/services/php" className="bg-white shadow rounded-xl p-6 hover:shadow-xl transition">
+          <h3 className="text-lg font-semibold text-blue-600">PHP Hosting</h3>
+          <p className="text-sm text-gray-500">Dynamic PHP apps hosting</p>
+        </Link>
+
+        <Link to="/dashboard/services/react" className="bg-white shadow rounded-xl p-6 hover:shadow-xl transition">
+          <h3 className="text-lg font-semibold text-cyan-600">React Hosting</h3>
+          <p className="text-sm text-gray-500">SPA and JS app support</p>
+        </Link>
+      </div>
+    </>
   );
-}
+};
 
-export default App;
+export default Dashboard;

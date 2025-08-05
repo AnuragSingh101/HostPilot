@@ -8,6 +8,7 @@ import Signup from "./pages/Signup";
 import Signin from "./pages/Signin";
 import Dashboard from "./pages/Dashboard";
 import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // Service pages (replace with real components if needed)
 const SSH = () => <div>SSH Access Page</div>;
@@ -25,29 +26,35 @@ const Features = () => <div>Features Page</div>;
 const Stories = () => <div>Client Stories Page</div>;
 
 function App() {
+  const isLoggedIn = localStorage.getItem("token") !== null;
+
   return (
     <BrowserRouter>
       <Routes>
         {/* Public routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Signin />} />
-        <Route path="/blogs" element={<Blogs />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/pricing" element={<Pricing />} />
-        <Route path="/support" element={<Support />} />
-        <Route path="/features" element={<Features />} />
-        <Route path="/stories" element={<Stories />} />
+        {!isLoggedIn && <Route path="/" element={<Home />} />}
+        {!isLoggedIn && <Route path="/signup" element={<Signup />} />}
+        {!isLoggedIn && <Route path="/login" element={<Signin />} />}
+        {!isLoggedIn && <Route path="/blogs" element={<Blogs />} />}
+        {!isLoggedIn && <Route path="/about" element={<About />} />}
+        {!isLoggedIn && <Route path="/contact" element={<Contact />} />}
+        {!isLoggedIn && <Route path="/pricing" element={<Pricing />} />}
+        {!isLoggedIn && <Route path="/support" element={<Support />} />}
+        {!isLoggedIn && <Route path="/features" element={<Features />} />}
+        {!isLoggedIn && <Route path="/stories" element={<Stories />} />}
 
-        {/* Protected Dashboard Layout with nested routes */}
-        <Route path="/dashboard" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="services/ssh" element={<SSH />} />
-          <Route path="services/html" element={<HTML />} />
-          <Route path="services/php" element={<PHP />} />
-          <Route path="services/react" element={<ReactHosting />} />
-        </Route>
+        {/* Protected routes */}
+        {isLoggedIn && (
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Layout />}>
+              <Route index element={<Dashboard />} />
+              <Route path="services/ssh" element={<SSH />} />
+              <Route path="services/html" element={<HTML />} />
+              <Route path="services/php" element={<PHP />} />
+              <Route path="services/react" element={<ReactHosting />} />
+            </Route>
+          </Route>
+        )}
       </Routes>
     </BrowserRouter>
   );
