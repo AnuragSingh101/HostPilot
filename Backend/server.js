@@ -1,31 +1,35 @@
+// server.js
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import authRoutes from './routes/authRoutes.js';
-import connectDB from './config/db.js';
 
+import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
+import sshRoutes from './routes/sshRoutes.js';
+import serviceRoutes from './routes/serviceRoutes.js';
 
 dotenv.config();
-
 const app = express();
 
-// CORS configuration
+// CORS for frontend
 app.use(cors({
-  origin: 'http://localhost:5173', // Vite dev server
+  origin: 'http://localhost:5173',
   credentials: true
 }));
 
+// Middleware
 app.use(express.json());
 
-connectDB(); // 🔌 Connect to MongoDB
+// Connect DB
+connectDB();
 
-// Mount only signup, login, profile routes under /api/auth
-app.use('/api/auth', authRoutes);
+// API Routes
+app.use('/api/auth', authRoutes);       // Signup, Login, Profile
+app.use('/api/ssh', sshRoutes);         // SSH create/save route
+app.use('/api/services', serviceRoutes); // Your services
 
-// Start the server
+// Server Listener
 const PORT = process.env.PORT || 5000;
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
-  });
+app.listen(PORT, () => {
+  console.log(`🚀 Express API Server running at http://localhost:${PORT}`);
 });

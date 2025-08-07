@@ -1,4 +1,3 @@
-// Sidebar.jsx
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -19,10 +18,10 @@ const Sidebar = () => {
 
   const menuItems = [
     { path: "/dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
-    { path: "/services/ssh", label: "SSH Access", icon: <FaTerminal /> },
-    { path: "/services/html", label: "HTML Hosting", icon: <FaHtml5 /> },
-    { path: "/services/php", label: "PHP Hosting", icon: <FaPhp /> },
-    { path: "/services/react", label: "React Hosting", icon: <FaReact /> },
+    { path: "/dashboard/services/ssh", label: "SSH Access", icon: <FaTerminal /> }, // ✅ Match export & route
+    { path: "/dashboard/services/html", label: "HTML Hosting", icon: <FaHtml5 /> },
+    { path: "/dashboard/services/php", label: "PHP Hosting", icon: <FaPhp /> },
+    { path: "/dashboard/services/react", label: "React Hosting", icon: <FaReact /> },
   ];
 
   const profileItems = [

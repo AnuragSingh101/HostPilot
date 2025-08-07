@@ -1,6 +1,6 @@
 // App.jsx
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 // Pages
 import Home from "./pages/Home";
@@ -10,11 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
-// Service pages (replace with real components if needed)
-const SSH = () => <div>SSH Access Page</div>;
-const HTML = () => <div>HTML Hosting Page</div>;
-const PHP = () => <div>PHP Hosting Page</div>;
-const ReactHosting = () => <div>React Hosting Page</div>;
+// Service pages
+import SSHService from './pages/services/SSHService'; // ✅ Only once!
 
 // Other placeholder pages
 const Blogs = () => <div>Blogs Page</div>;
@@ -31,30 +28,30 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public routes */}
-        {!isLoggedIn && <Route path="/" element={<Home />} />}
-        {!isLoggedIn && <Route path="/signup" element={<Signup />} />}
-        {!isLoggedIn && <Route path="/login" element={<Signin />} />}
-        {!isLoggedIn && <Route path="/blogs" element={<Blogs />} />}
-        {!isLoggedIn && <Route path="/about" element={<About />} />}
-        {!isLoggedIn && <Route path="/contact" element={<Contact />} />}
-        {!isLoggedIn && <Route path="/pricing" element={<Pricing />} />}
-        {!isLoggedIn && <Route path="/support" element={<Support />} />}
-        {!isLoggedIn && <Route path="/features" element={<Features />} />}
-        {!isLoggedIn && <Route path="/stories" element={<Stories />} />}
+        {/* Default redirect */}
+        <Route path="/" element={<Navigate to={isLoggedIn ? "/dashboard" : "/login"} replace />} />
 
-        {/* Protected routes */}
-        {isLoggedIn && (
-          <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Layout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="services/ssh" element={<SSH />} />
-              <Route path="services/html" element={<HTML />} />
-              <Route path="services/php" element={<PHP />} />
-              <Route path="services/react" element={<ReactHosting />} />
-            </Route>
+        {/* Public Routes */}
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Signin />} />
+        <Route path="/blogs" element={<Blogs />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/support" element={<Support />} />
+        <Route path="/features" element={<Features />} />
+        <Route path="/stories" element={<Stories />} />
+
+        {/* Protected Dashboard Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="services/ssh" element={<SSHService />} />
           </Route>
-        )}
+        </Route>
+
+        {/* 404 Fallback */}
+        <Route path="*" element={<div className="p-10 text-center text-red-600 font-bold text-lg">404 - Page Not Found</div>} />
       </Routes>
     </BrowserRouter>
   );
