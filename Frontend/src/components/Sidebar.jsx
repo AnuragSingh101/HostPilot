@@ -16,12 +16,13 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // ✅ Fixed paths to match App.jsx
   const menuItems = [
     { path: "/dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
-    { path: "/dashboard/services/ssh", label: "SSH Access", icon: <FaTerminal /> }, // ✅ Match export & route
-    { path: "/dashboard/services/html", label: "HTML Hosting", icon: <FaHtml5 /> },
-    { path: "/dashboard/services/php", label: "PHP Hosting", icon: <FaPhp /> },
-    { path: "/dashboard/services/react", label: "React Hosting", icon: <FaReact /> },
+    { path: "/dashboard/services/ssh", label: "SSH Access", icon: <FaTerminal /> },
+    { path: "/dashboard/services/html-hosting", label: "HTML Hosting", icon: <FaHtml5 /> },
+    { path: "/dashboard/services/php-hosting", label: "PHP Hosting", icon: <FaPhp /> },
+    { path: "/dashboard/services/react-hosting", label: "React Hosting", icon: <FaReact /> },
   ];
 
   const profileItems = [

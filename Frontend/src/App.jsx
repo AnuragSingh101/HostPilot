@@ -9,9 +9,12 @@ import Signin from "./pages/Signin";
 import Dashboard from "./pages/Dashboard";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import HTMLHosting from './pages/services/HTMLHosting';  
+import PHPHosting from './pages/services/PHPHosting'; 
+import ReactHosting from './pages/services/ReactHosting'; 
 
 // Service pages
-import SSHService from './pages/services/SSHService'; // ✅ Only once!
+import SSHService from './pages/services/SSHService';
 
 // Other placeholder pages
 const Blogs = () => <div>Blogs Page</div>;
@@ -47,6 +50,9 @@ function App() {
           <Route path="/dashboard" element={<Layout />}>
             <Route index element={<Dashboard />} />
             <Route path="services/ssh" element={<SSHService />} />
+            <Route path="services/html-hosting" element={<HTMLHosting />} />
+            <Route path="services/php-hosting" element={<PHPHosting />} />
+            <Route path="services/react-hosting" element={<ReactHosting />} />
           </Route>
         </Route>
 
