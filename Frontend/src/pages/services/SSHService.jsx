@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
+import FileManagerPanel from '../../components/FileManagerPanel';
+
 
 const SSHService = () => {
   const terminalRef = useRef(null);
@@ -13,6 +15,7 @@ const SSHService = () => {
   const [connected, setConnected] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [showTerminal, setShowTerminal] = useState(false);
+  const [showFileManager, setShowFileManager] = useState(false);
 
   const [formData, setFormData] = useState({
     ip: '',
@@ -369,6 +372,24 @@ const SSHService = () => {
         <div
           ref={terminalRef}
           className="h-[600px] w-full bg-black rounded-xl shadow overflow-hidden mt-6"
+        />
+      )}
+
+      {/* File Manager Button */}
+      {showTerminal && !showFileManager && (
+        <button
+          onClick={() => setShowFileManager(true)}
+          className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg"
+        >
+          📂 Open File Manager
+        </button>
+      )}
+
+      {/* File Manager Panel */}
+      {showFileManager && (
+        <FileManagerPanel
+          credentials={formData}
+          onBack={() => setShowFileManager(false)}
         />
       )}
     </div>

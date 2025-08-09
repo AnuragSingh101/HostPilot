@@ -7,6 +7,9 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import sshRoutes from './routes/sshRoutes.js';
 import serviceRoutes from './routes/serviceRoutes.js';
+import fileRoutes from './routes/files.js';
+
+// import fileManagerRoutes from './routes/fileManagerRoutes.js'; // This is not used in the current setup
 
 dotenv.config();
 const app = express();
@@ -27,6 +30,9 @@ connectDB();
 app.use('/api/auth', authRoutes);       // Signup, Login, Profile
 app.use('/api/ssh', sshRoutes);         // SSH create/save route
 app.use('/api/services', serviceRoutes); // Your services
+app.use('/api/files', fileRoutes);
+
+
 
 // Server Listener
 const PORT = process.env.PORT || 5000;
