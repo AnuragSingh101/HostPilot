@@ -6,12 +6,11 @@ const Navbar = () => {
   const [showMenu, setShowMenu] = useState(false);
   const location = useLocation();
 
-  // Active link styling
   const navLink = (path, label) => (
     <Link
       to={path}
-      className={`text-sm font-medium hover:text-blue-600 transition duration-150 ${
-        location.pathname === path ? "text-blue-600 font-semibold" : ""
+      className={`text-gray-700 hover:text-blue-600 transition font-medium px-3 py-2 rounded-md ${
+        location.pathname === path ? "text-blue-600 font-semibold bg-blue-100" : ""
       }`}
     >
       {label}
@@ -19,86 +18,201 @@ const Navbar = () => {
   );
 
   return (
-    <nav className="bg-white text-black shadow-md p-4 flex justify-between items-center relative z-50">
-      {/* Logo */}
-      <div className="text-2xl font-bold">
-        <Link to="/" className="hover:text-blue-600">HostPilot</Link>
-      </div>
+    <nav className="bg-white shadow-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        {/* Logo */}
+        <Link to="/" className="text-3xl font-extrabold text-blue-700 hover:text-blue-800">
+          HostPilot
+        </Link>
 
-      {/* Desktop Navigation */}
-      <div className="hidden md:flex items-center gap-6 text-base">
-        {/* Services Dropdown */}
-        <div
-          className="relative group"
-          onMouseEnter={() => setShowServices(true)}
-          onMouseLeave={() => setShowServices(false)}
-        >
-          <button className="text-sm font-medium hover:text-blue-600 transition duration-150">
-            Services ▾
-          </button>
-
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center space-x-6 text-base">
+          {/* Services dropdown */}
           <div
-            className={`absolute top-10 left-0 bg-white border rounded shadow-md w-56 transition-opacity duration-200 ${
-              showServices ? "opacity-100 visible" : "opacity-0 invisible"
-            }`}
+            className="relative"
+            onMouseEnter={() => setShowServices(true)}
+            onMouseLeave={() => setShowServices(false)}
           >
-            <Link to="/services/ssh" className="block px-4 py-2 hover:bg-blue-50 text-sm">SSH Access</Link>
-            <Link to="/services/php" className="block px-4 py-2 hover:bg-blue-50 text-sm">PHP Hosting</Link>
-            <Link to="/services/html" className="block px-4 py-2 hover:bg-blue-50 text-sm">HTML Hosting</Link>
-            <Link to="/services/react" className="block px-4 py-2 hover:bg-blue-50 text-sm">React Hosting</Link>
+            <button
+              className="flex items-center gap-1 text-gray-700 hover:text-blue-600 font-medium focus:outline-none"
+              aria-haspopup="true"
+              aria-expanded={showServices}
+            >
+              Services
+              <svg
+                className={`w-4 h-4 transform transition-transform duration-200 ${
+                  showServices ? "rotate-180" : "rotate-0"
+                }`}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <div
+              className={`absolute left-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden transition-opacity duration-300 ${
+                showServices ? "opacity-100 visible" : "opacity-0 invisible"
+              }`}
+            >
+              <Link
+                to="/services/ssh"
+                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              >
+                SSH Access
+              </Link>
+              <Link
+                to="/services/php"
+                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              >
+                PHP Hosting
+              </Link>
+              <Link
+                to="/services/html"
+                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              >
+                HTML Hosting
+              </Link>
+              <Link
+                to="/services/react"
+                className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600"
+              >
+                React Hosting
+              </Link>
+            </div>
           </div>
+
+          {navLink("/blogs", "Blogs")}
+          {navLink("/about", "About Us")}
+          {navLink("/contact", "Contact Us")}
+          {navLink("/pricing", "Pricing")}
         </div>
 
-        {navLink("/blogs", "Blogs")}
-        {navLink("/about", "About Us")}
-        {navLink("/contact", "Contact Us")}
-        {navLink("/pricing", "Pricing")}
-      </div>
+        {/* Auth Buttons */}
+        <div className="hidden md:flex items-center gap-3">
+          <Link
+            to="/login"
+            className="px-4 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 font-semibold transition"
+          >
+            Login
+          </Link>
+          <Link
+            to="/signup"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-semibold transition"
+          >
+            Signup
+          </Link>
+        </div>
 
-      {/* Auth Buttons */}
-      <div className="hidden md:flex gap-2">
-        <Link
-          to="/login"
-          className="text-blue-600 border border-blue-600 px-4 py-1 rounded hover:bg-blue-50 text-sm font-medium transition"
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setShowMenu(!showMenu)}
+          className="md:hidden text-blue-700 hover:text-blue-900 focus:outline-none"
+          aria-label="Toggle menu"
         >
-          Login
-        </Link>
-        <Link
-          to="/signup"
-          className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm font-medium transition"
-        >
-          Signup
-        </Link>
-      </div>
-
-      {/* Mobile Toggle Button */}
-      <div className="md:hidden">
-        <button onClick={() => setShowMenu(!showMenu)} className="text-2xl font-bold">
-          ☰
+          <svg
+            className="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            {showMenu ? (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
         </button>
       </div>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Mobile Menu */}
       {showMenu && (
-        <div className="absolute top-16 left-0 w-full bg-white shadow-md flex flex-col gap-2 p-4 md:hidden z-50 text-sm">
-          <Link to="/" onClick={() => setShowMenu(false)}>Home</Link>
+        <div className="md:hidden bg-white border-t border-gray-200 shadow-md">
+          <div className="flex flex-col px-6 py-4 space-y-3 text-gray-700 text-sm">
+            <Link to="/" onClick={() => setShowMenu(false)} className="hover:text-blue-600">
+              Home
+            </Link>
 
-          <details className="group">
-            <summary className="cursor-pointer">Services</summary>
-            <div className="pl-4 flex flex-col">
-              <Link to="/services/ssh" onClick={() => setShowMenu(false)}>SSH Access</Link>
-              <Link to="/services/php" onClick={() => setShowMenu(false)}>PHP Hosting</Link>
-              <Link to="/services/html" onClick={() => setShowMenu(false)}>HTML Hosting</Link>
-              <Link to="/services/react" onClick={() => setShowMenu(false)}>React Hosting</Link>
-            </div>
-          </details>
+            <details className="group">
+              <summary className="cursor-pointer flex justify-between items-center font-medium py-2 hover:text-blue-600">
+                Services
+                <svg
+                  className="w-4 h-4 text-gray-600 group-open:rotate-180 transition-transform duration-200"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <div className="flex flex-col pl-4 mt-2 space-y-2">
+                <Link
+                  to="/services/ssh"
+                  onClick={() => setShowMenu(false)}
+                  className="hover:text-blue-600"
+                >
+                  SSH Access
+                </Link>
+                <Link
+                  to="/services/php"
+                  onClick={() => setShowMenu(false)}
+                  className="hover:text-blue-600"
+                >
+                  PHP Hosting
+                </Link>
+                <Link
+                  to="/services/html"
+                  onClick={() => setShowMenu(false)}
+                  className="hover:text-blue-600"
+                >
+                  HTML Hosting
+                </Link>
+                <Link
+                  to="/services/react"
+                  onClick={() => setShowMenu(false)}
+                  className="hover:text-blue-600"
+                >
+                  React Hosting
+                </Link>
+              </div>
+            </details>
 
-          <Link to="/blogs" onClick={() => setShowMenu(false)}>Blogs</Link>
-          <Link to="/about" onClick={() => setShowMenu(false)}>About Us</Link>
-          <Link to="/contact" onClick={() => setShowMenu(false)}>Contact Us</Link>
-          <Link to="/pricing" onClick={() => setShowMenu(false)}>Pricing</Link>
-          <Link to="/login" onClick={() => setShowMenu(false)} className="text-blue-600">Login</Link>
-          <Link to="/signup" onClick={() => setShowMenu(false)} className="text-white bg-blue-600 px-2 py-1 rounded mt-2 w-max">Signup</Link>
+            <Link to="/blogs" onClick={() => setShowMenu(false)} className="hover:text-blue-600">
+              Blogs
+            </Link>
+            <Link to="/about" onClick={() => setShowMenu(false)} className="hover:text-blue-600">
+              About Us
+            </Link>
+            <Link to="/contact" onClick={() => setShowMenu(false)} className="hover:text-blue-600">
+              Contact Us
+            </Link>
+            <Link to="/pricing" onClick={() => setShowMenu(false)} className="hover:text-blue-600">
+              Pricing
+            </Link>
+            <Link
+              to="/login"
+              onClick={() => setShowMenu(false)}
+              className="text-blue-600 font-semibold"
+            >
+              Login
+            </Link>
+            <Link
+              to="/signup"
+              onClick={() => setShowMenu(false)}
+              className="bg-blue-600 text-white px-3 py-1 rounded-md font-semibold"
+            >
+              Signup
+            </Link>
+          </div>
         </div>
       )}
     </nav>

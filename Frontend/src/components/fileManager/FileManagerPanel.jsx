@@ -1,6 +1,8 @@
+// FileManagerPanel.jsx
 import React, { useState, useEffect } from 'react';
-import Toolbar from './Toolbar';
-import FileTable from './FileTable';
+import { ArrowLeft } from 'lucide-react';
+import Toolbar from '../Toolbar';
+import FileTable from '../FileTable';
 import Breadcrumb from './Breadcrumb';
 
 const FileManagerPanel = ({ credentials, onBack }) => {
@@ -17,18 +19,13 @@ const FileManagerPanel = ({ credentials, onBack }) => {
           path: dirPath
         }),
       });
-
       const data = await res.json();
-      console.log('📂 API Response:', data);
-
       if (Array.isArray(data.files)) {
         setFiles(data.files);
         setCurrentPath(dirPath);
-      } else {
-        console.error('Invalid data format', data);
       }
     } catch (err) {
-      console.error('Failed to fetch files', err);
+      // Log error
     }
   };
 
@@ -40,16 +37,13 @@ const FileManagerPanel = ({ credentials, onBack }) => {
       setCurrentPath(newPath || '/');
       fetchFileList(newPath || '/');
     } else {
-      const newPath = currentPath === '/' 
+      const newPath = currentPath === '/'
         ? `/${folderName}`
         : `${currentPath}/${folderName}`;
       setCurrentPath(newPath);
       fetchFileList(newPath);
     }
   };
-  
-  
-  
 
   useEffect(() => {
     if (credentials?.ip && credentials?.username) {
@@ -58,20 +52,24 @@ const FileManagerPanel = ({ credentials, onBack }) => {
   }, [credentials]);
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold">📂 File Manager</h2>
+    <div className="p-6 bg-gray-900 rounded-xl shadow-lg border border-gray-800 space-y-5">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          📂 File Manager
+        </h2>
         <button
           onClick={onBack}
-          className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg shadow transition"
         >
-          ⏪ Back to Terminal
+          <ArrowLeft size={18} /> Back to Terminal
         </button>
       </div>
-
+      {/* Breadcrumb */}
       <Breadcrumb path={currentPath} onNavigate={fetchFileList} />
+      {/* Toolbar */}
       <Toolbar onRefresh={() => fetchFileList(currentPath)} />
-
+      {/* File Table */}
       <FileTable
         files={files}
         onDelete={(name) => console.log('Delete', name)}
@@ -81,5 +79,4 @@ const FileManagerPanel = ({ credentials, onBack }) => {
     </div>
   );
 };
-
 export default FileManagerPanel;

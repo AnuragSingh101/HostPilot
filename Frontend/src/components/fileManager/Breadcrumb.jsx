@@ -1,13 +1,15 @@
 // Breadcrumb.jsx
 import React from 'react';
+import { FaFolderOpen } from 'react-icons/fa';
 
 const Breadcrumb = ({ path = '', onNavigate = () => {} }) => {
   const parts = path.split('/').filter(Boolean);
 
   return (
-    <nav className="text-sm text-gray-600 mb-4">
+    <nav className="flex items-center text-sm text-gray-300 mb-4 bg-gray-800 px-3 py-2 rounded-lg shadow border border-gray-800">
+      <FaFolderOpen className="text-yellow-400 mr-2" />
       <span
-        className="cursor-pointer hover:underline"
+        className="cursor-pointer hover:text-blue-400 transition"
         onClick={() => onNavigate('/')}
       >
         Root
@@ -15,10 +17,10 @@ const Breadcrumb = ({ path = '', onNavigate = () => {} }) => {
       {parts.map((part, idx) => {
         const subPath = '/' + parts.slice(0, idx + 1).join('/');
         return (
-          <span key={idx}>
-            {' / '}
+          <span key={idx} className="flex items-center">
+            <span className="mx-2 text-gray-600 font-bold">/</span>
             <span
-              className="cursor-pointer hover:underline"
+              className="cursor-pointer hover:text-blue-400 transition"
               onClick={() => onNavigate(subPath)}
             >
               {part}
@@ -29,5 +31,4 @@ const Breadcrumb = ({ path = '', onNavigate = () => {} }) => {
     </nav>
   );
 };
-
 export default Breadcrumb;

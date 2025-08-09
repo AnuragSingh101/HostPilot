@@ -1,29 +1,32 @@
 // Toolbar.jsx
 import React from 'react';
+import { Upload, FolderPlus, RefreshCw } from 'lucide-react';
 
 const Toolbar = ({ onUpload, onCreate, onRefresh }) => {
   return (
-    <div className="flex gap-2 mb-4">
+    <div className="flex flex-wrap gap-3 mb-5 bg-gray-900 p-3 rounded-lg shadow border border-gray-800">
       <button
-        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
         onClick={onUpload}
+        className="flex items-center gap-2 bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow transition"
       >
-        ⬆️ Upload
+        <Upload size={16} />
+        <span>Upload</span>
       </button>
       <button
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
         onClick={onCreate}
+        className="flex items-center gap-2 bg-blue-700 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow transition"
       >
-        📄 New File/Folder
+        <FolderPlus size={16} />
+        <span>New File/Folder</span>
       </button>
       <button
-        className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
         onClick={onRefresh}
+        className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg shadow transition"
       >
-        🔄 Refresh
+        <RefreshCw size={16} />
+        <span>Refresh</span>
       </button>
     </div>
   );
 };
-
 export default Toolbar;

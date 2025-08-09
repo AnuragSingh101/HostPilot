@@ -1,37 +1,55 @@
 // FileTable.jsx
 import React from 'react';
+import { FaFolder, FaFile } from 'react-icons/fa';
 
 const FileTable = ({ files = [], onDelete = () => {}, onRename = () => {}, onNavigate = () => {} }) => {
   return (
-    <div className="overflow-x-auto bg-white rounded-lg shadow">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-100">
+    <div className="overflow-x-auto bg-gray-900 rounded-lg shadow border border-gray-800">
+      <table className="min-w-full divide-y divide-gray-800">
+        <thead className="bg-gray-800">
           <tr>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Name</th>
-            <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Type</th>
-            <th className="px-4 py-2 text-right text-xs font-medium text-gray-500">Actions</th>
+            <th className="px-4 py-2 text-left text-xs font-semibold text-gray-400">Name</th>
+            <th className="px-4 py-2 text-left text-xs font-medium text-gray-400">Type</th>
+            <th className="px-4 py-2 text-right text-xs font-medium text-gray-400">Actions</th>
           </tr>
         </thead>
         <tbody>
           {files.length > 0 ? (
             files.map((file, idx) => (
-              <tr key={idx} className="border-t hover:bg-gray-50">
+              <tr 
+                key={idx} 
+                className="border-t border-gray-800 hover:bg-gray-800/70 transition"
+              >
                 <td
-                  className={`px-4 py-2 ${
-                    file.type === 'folder' ? 'text-blue-600 cursor-pointer' : ''
+                  className={`px-4 py-2 flex items-center gap-2 ${
+                    file.type === 'folder' ? 'text-blue-400 cursor-pointer font-semibold' : 'text-gray-200'
                   }`}
                   onClick={() => {
                     if (file.type === 'folder') {
-                      onNavigate(file.name); // Trigger navigation only for folders
+                      onNavigate(file.name);
                     }
                   }}
+                  style={{ userSelect: "text" }}
                 >
-                  {file.name}
+                  {file.type === "folder" ? (
+                    <FaFolder className="text-yellow-400" />
+                  ) : (
+                    <FaFile className="text-gray-400" />
+                  )}
+                  <span>{file.name}</span>
                 </td>
-                <td className="px-4 py-2">{file.type}</td>
+                <td className="px-4 py-2 text-sm">
+                  <span className="flex items-center gap-1">
+                    {file.type === "folder"
+                      ? <FaFolder className="text-yellow-400" />
+                      : <FaFile className="text-gray-400" />
+                    }
+                    {file.type === "folder" ? "Folder" : "File"}
+                  </span>
+                </td>
                 <td className="px-4 py-2 text-right">
                   <button
-                    className="text-yellow-600 hover:underline mr-4"
+                    className="text-yellow-400 hover:underline mr-4"
                     onClick={(e) => {
                       e.stopPropagation();
                       onRename(file);
@@ -40,7 +58,7 @@ const FileTable = ({ files = [], onDelete = () => {}, onRename = () => {}, onNav
                     Rename
                   </button>
                   <button
-                    className="text-red-600 hover:underline"
+                    className="text-red-400 hover:underline"
                     onClick={(e) => {
                       e.stopPropagation();
                       onDelete(file);
@@ -63,5 +81,4 @@ const FileTable = ({ files = [], onDelete = () => {}, onRename = () => {}, onNav
     </div>
   );
 };
-
 export default FileTable;

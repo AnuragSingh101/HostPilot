@@ -3,8 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import 'xterm/css/xterm.css';
-import FileManagerPanel from '../../components/FileManagerPanel';
-
+import FileManagerPanel from '../../components/fileManager/FileManagerPanel';
 
 const SSHService = () => {
   const terminalRef = useRef(null);
@@ -112,12 +111,34 @@ const SSHService = () => {
 
   useEffect(() => {
     xterm.current = new Terminal({
-      fontSize: 14,
+      fontFamily: "'Fira Mono', monospace",
+      fontSize: 15,
+      fontWeight: 'normal',
       cursorBlink: true,
+      cursorStyle: 'block',
       theme: {
-        background: '#000000',
-        foreground: '#00FF00'
-      }
+        background: '#0f172a',
+        foreground: '#e0e7ff',
+        cursor: '#60a5fa',
+        selection: 'rgba(96, 165, 250, 0.3)',
+        black: '#000000',
+        red: '#ef4444',
+        green: '#22c55e',
+        yellow: '#eab308',
+        blue: '#3b82f6',
+        magenta: '#8b5cf6',
+        cyan: '#06b6d4',
+        white: '#f9fafb',
+        brightBlack: '#64748b',
+        brightRed: '#f87171',
+        brightGreen: '#4ade80',
+        brightYellow: '#fde68a',
+        brightBlue: '#93c5fd',
+        brightMagenta: '#c4b5fd',
+        brightCyan: '#67e8f9',
+        brightWhite: '#ffffff',
+      },
+      scrollback: 1000,
     });
 
     fitAddon.current = new FitAddon();
@@ -161,12 +182,12 @@ const SSHService = () => {
           {/* Header */}
           <header className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-4xl font-extrabold text-purple-700">💻 Shell Access</h1>
+              <h1 className="text-4xl font-extrabold text-blue-700">💻 Shell Access</h1>
               <p className="mt-1 text-lg text-gray-600">Interact with your server using a secure shell.</p>
             </div>
             <button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow-md transition"
             >
               ⚡ Connect your SSH
             </button>
@@ -175,9 +196,9 @@ const SSHService = () => {
           {/* Stats Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { value: '1.2M+', label: 'SSH Sessions Daily', color: 'text-purple-600' },
+              { value: '1.2M+', label: 'SSH Sessions Daily', color: 'text-blue-600' },
               { value: '99.9%', label: 'Uptime Secured by SSH', color: 'text-green-600' },
-              { value: '10K+', label: 'Engineers Using SSH', color: 'text-blue-600' },
+              { value: '10K+', label: 'Engineers Using SSH', color: 'text-indigo-600' },
               { value: '24/7', label: 'Global Access', color: 'text-yellow-600' }
             ].map(({ value, label, color }, idx) => (
               <div
@@ -206,7 +227,7 @@ const SSHService = () => {
               <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">🌐 SSH Quick Facts</h2>
               {facts.map((fact, i) => (
                 <div key={i} className="mb-4">
-                  <h3 className="text-sm font-semibold text-purple-700 mb-1">{fact.title}</h3>
+                  <h3 className="text-sm font-semibold text-blue-700 mb-1">{fact.title}</h3>
                   <p className="text-xs text-gray-600">{fact.desc}</p>
                 </div>
               ))}
@@ -215,8 +236,8 @@ const SSHService = () => {
 
           {/* Tips */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
-            <div className="p-6 border-l-6 border-purple-500 bg-purple-50 rounded-xl shadow-sm">
-              <h4 className="font-semibold text-purple-700 mb-2 flex items-center gap-2">🔧 Quick Tip:</h4>
+            <div className="p-6 border-l-6 border-blue-500 bg-blue-50 rounded-xl shadow-sm">
+              <h4 className="font-semibold text-blue-700 mb-2 flex items-center gap-2">🔧 Quick Tip:</h4>
               <p className="text-gray-700 text-sm">
                 Use <code className="bg-gray-200 px-2 py-1 rounded text-xs font-mono">Ctrl + C</code> to stop a running command.
               </p>
@@ -262,7 +283,7 @@ const SSHService = () => {
                     <select
                       name={name}
                       id={name}
-                      className="input w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="input w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       onChange={handleInputChange}
                       value={formData[name]}
                     >
@@ -278,7 +299,7 @@ const SSHService = () => {
                       id={name}
                       name={name}
                       placeholder={placeholder}
-                      className="input w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="input w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       onChange={handleInputChange}
                       value={value !== undefined ? value : formData[name]}
                     />
@@ -296,7 +317,7 @@ const SSHService = () => {
                     id="password"
                     name="password"
                     placeholder="••••••••"
-                    className="input w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="input w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     onChange={handleInputChange}
                     autoComplete="current-password"
                   />
@@ -314,7 +335,7 @@ const SSHService = () => {
                       name="privateKey"
                       rows="6"
                       placeholder="Paste your SSH private key here..."
-                      className="input w-full border border-gray-300 rounded-md px-3 py-2 resize-y focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono"
+                      className="input w-full border border-gray-300 rounded-md px-3 py-2 resize-y focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
                       onChange={handleInputChange}
                       spellCheck="false"
                     />
@@ -328,7 +349,7 @@ const SSHService = () => {
                       id="passphrase"
                       name="passphrase"
                       placeholder="Optional"
-                      className="input w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="input w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       onChange={handleInputChange}
                       autoComplete="off"
                     />
@@ -360,7 +381,7 @@ const SSHService = () => {
               <p className="text-sm">Passwords are easier to brute force. For production, always prefer SSH key authentication with a strong passphrase.</p>
             </div>
             <div className="p-5 bg-yellow-50 border-l-8 border-yellow-500 rounded-lg shadow">
-              <h4 className="text-yellow-700 font-semibold mb-1">⚠️ Common Error</h4>
+              <h4 className="text-yellow-700 font-semibold mb-2">⚠️ Common Error</h4>
               <p className="text-sm">"Connection refused" usually means SSH is not running on the server or the port is incorrect.</p>
             </div>
           </aside>
@@ -371,7 +392,7 @@ const SSHService = () => {
       {showTerminal && (
         <div
           ref={terminalRef}
-          className="h-[600px] w-full bg-black rounded-xl shadow overflow-hidden mt-6"
+          className="h-[600px] w-full bg-[#0f172a] rounded-xl shadow overflow-hidden mt-6"
         />
       )}
 
