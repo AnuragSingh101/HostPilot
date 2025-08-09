@@ -33,18 +33,23 @@ const FileManagerPanel = ({ credentials, onBack }) => {
   };
 
   const handleNavigate = (folderName) => {
-    if (folderName === '.') return;
-    if (folderName === '..') {
+    if (folderName === '.' || folderName === '..') {
       const parts = currentPath.split('/').filter(Boolean);
       parts.pop();
       const newPath = '/' + parts.join('/');
+      setCurrentPath(newPath || '/');
       fetchFileList(newPath || '/');
     } else {
-      const newPath =
-        currentPath === '/' ? `/${folderName}` : `${currentPath}/${folderName}`;
+      const newPath = currentPath === '/' 
+        ? `/${folderName}`
+        : `${currentPath}/${folderName}`;
+      setCurrentPath(newPath);
       fetchFileList(newPath);
     }
   };
+  
+  
+  
 
   useEffect(() => {
     if (credentials?.ip && credentials?.username) {

@@ -15,10 +15,16 @@ const FileTable = ({ files = [], onDelete = () => {}, onRename = () => {}, onNav
         <tbody>
           {files.length > 0 ? (
             files.map((file, idx) => (
-              <tr key={idx} className="border-t">
+              <tr key={idx} className="border-t hover:bg-gray-50">
                 <td
-                  className={`px-4 py-2 cursor-pointer ${file.type === 'directory' ? 'text-blue-600' : ''}`}
-                  onClick={() => file.type === 'directory' && onNavigate(file.name)}
+                  className={`px-4 py-2 ${
+                    file.type === 'folder' ? 'text-blue-600 cursor-pointer' : ''
+                  }`}
+                  onClick={() => {
+                    if (file.type === 'folder') {
+                      onNavigate(file.name); // Trigger navigation only for folders
+                    }
+                  }}
                 >
                   {file.name}
                 </td>
@@ -26,13 +32,19 @@ const FileTable = ({ files = [], onDelete = () => {}, onRename = () => {}, onNav
                 <td className="px-4 py-2 text-right">
                   <button
                     className="text-yellow-600 hover:underline mr-4"
-                    onClick={() => onRename(file)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRename(file);
+                    }}
                   >
                     Rename
                   </button>
                   <button
                     className="text-red-600 hover:underline"
-                    onClick={() => onDelete(file)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(file);
+                    }}
                   >
                     Delete
                   </button>

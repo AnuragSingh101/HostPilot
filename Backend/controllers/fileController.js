@@ -4,20 +4,18 @@ import { connectSSH } from './sshController.js';
  * List files in a given path on remote server via SSH
  */
 export const listFiles = async (req, res) => {
-  const { credentials, path } = req.body; // ✅ credentials from frontend
+  const { credentials, path } = req.body;
 
-  if (!credentials || !credentials.ip || !credentials.username) {
-    return res.status(400).json({ error: 'Missing SSH credentials' });
+  if (!credentials || !path) {
+    return res.status(400).json({ error: 'Missing SSH credentials or path' });
   }
 
   try {
     const conn = await connectSSH(credentials);
 
+    // quotes ke saath taaki special chars/space ka issue na ho
     conn.exec(`ls -la "${path}"`, (err, stream) => {
-      if (err) {
-        conn.end();
-        return res.status(500).json({ message: 'Command execution failed', error: err.message });
-      }
+      if (err) throw err;
 
       let output = '';
       stream
@@ -42,6 +40,9 @@ export const listFiles = async (req, res) => {
     res.status(500).json({ message: 'Failed to list files', error: err.message });
   }
 };
+
+
+
 
 /**
  * Create file or folder
@@ -99,7 +100,7 @@ export const renamePath = async (req, res) => {
     return res.status(400).json({ error: 'Missing SSH credentials' });
   }
 
-  try {
+  try { 
     const conn = await connectSSH(credentials);
     conn.exec(`mv "${oldPath}" "${newPath}"`, (err) => {
       conn.end();
