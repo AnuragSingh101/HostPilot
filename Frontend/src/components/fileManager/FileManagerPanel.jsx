@@ -1,13 +1,18 @@
-// FileManagerPanel.jsx
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import Toolbar from '../Toolbar';
 import FileTable from '../FileTable';
 import Breadcrumb from './Breadcrumb';
+import EditorModal from './EditorModal'; // ⬅ new
 
 const FileManagerPanel = ({ credentials, onBack }) => {
   const [files, setFiles] = useState([]);
   const [currentPath, setCurrentPath] = useState('/');
+
+  // Editor Modal State
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editorContent, setEditorContent] = useState("");
+  const [editorFile, setEditorFile] = useState("");
 
   const fetchFileList = async (dirPath = '/') => {
     try {
@@ -25,7 +30,7 @@ const FileManagerPanel = ({ credentials, onBack }) => {
         setCurrentPath(dirPath);
       }
     } catch (err) {
-      // Log error
+      console.error(err);
     }
   };
 
@@ -42,6 +47,63 @@ const FileManagerPanel = ({ credentials, onBack }) => {
         : `${currentPath}/${folderName}`;
       setCurrentPath(newPath);
       fetchFileList(newPath);
+    }
+  };
+
+  // 📄 Open File in Editor
+  // const handleOpenFile = async (file) => {
+  //   try {
+  //     const res = await fetch("http://localhost:5000/api/files/read", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         credentials,
+  //         path: `${currentPath}/${file.name}`
+  //       }),
+  //     });
+  //     const data = await res.json();
+  //     setEditorContent(data.content);
+  //     setEditorFile(file.name);
+  //     setEditorOpen(true);
+  //   } catch (err) {
+  //     console.error("Error opening file:", err);
+  //   }
+  // };
+  const handleOpenFile = async (file) => {
+    try {
+      const res = await fetch("http://localhost:5000/api/files/read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          credentials,
+          path: `${currentPath}/${file.name}`
+        }),
+      });
+      const data = await res.json();
+      setEditorContent(data.content);  // Ensure this sets the existing file content
+      setEditorFile(file.name);
+      setEditorOpen(true);
+    } catch (err) {
+      console.error("Error opening file:", err);
+    }
+  };
+    
+
+  // 💾 Save File Changes
+  const handleSaveFile = async (newContent) => {
+    try {
+      await fetch("http://localhost:5000/api/files/save", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          credentials,
+          path: `${currentPath}/${editorFile}`,
+          content: newContent
+        }),
+      });
+      setEditorOpen(false);
+    } catch (err) {
+      console.error("Error saving file:", err);
     }
   };
 
@@ -75,8 +137,18 @@ const FileManagerPanel = ({ credentials, onBack }) => {
         onDelete={(name) => console.log('Delete', name)}
         onRename={(name) => console.log('Rename', name)}
         onNavigate={handleNavigate}
+        onOpen={handleOpenFile} // ⬅ new
+      />
+      {/* Editor Modal */}
+      <EditorModal
+        isOpen={editorOpen}
+        fileName={editorFile}
+        initialContent={editorContent}
+        onClose={() => setEditorOpen(false)}
+        onSave={handleSaveFile}
       />
     </div>
   );
 };
+
 export default FileManagerPanel;
