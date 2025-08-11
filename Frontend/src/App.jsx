@@ -2,17 +2,17 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Pages
-import Home from "./pages/Home";
-import Signup from "./pages/Signup";
-import Signin from "./pages/Signin";
-import Dashboard from "./pages/Dashboard";
-import Layout from "./components/Layout";
+import Home from "./pages/mainPages/Home";
+import Signup from "./pages/Auth/Signup";
+import Signin from "./pages/Auth/Signin";
+import Dashboard from "./pages/mainPages/Dashboard";
+import Layout from "./components/layouts/Layout"; 
 import ProtectedRoute from "./components/ProtectedRoute";
 import HTMLHosting from './pages/services/HTMLHosting';
 import PHPHosting from './pages/services/PHPHosting';
 import ReactHosting from './pages/services/ReactHosting';
 
-import SSHService from './pages/services/SSHService';
+import SSHService from './components/sshFeature/SSHService';
 
 // Placeholder pages
 const Blogs = () => <div className="text-center text-gray-300 py-16">Blogs Page</div>;

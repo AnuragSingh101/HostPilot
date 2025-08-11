@@ -19,6 +19,23 @@ export const signup = async (req, res) => {
       individualDetails
     } = req.body;
 
+    // ✅ Validate required fields
+    if (!fullName || !email || !password || !accountType) {
+      return res.status(400).json({
+        success: false,
+        message: "Full name, email, password, and account type are required."
+      });
+    }
+
+    // 🔍 Check if email already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already registered."
+      });
+    }
+
     // 🔐 Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -32,16 +49,16 @@ export const signup = async (req, res) => {
       accountType
     };
 
-    // ➕ Conditionally add extra details
-    if (accountType === 'employee') {
+    // ➕ Conditionally add details if valid
+    if (accountType === 'employee' && companyDetails && Object.keys(companyDetails).length > 0) {
       userData.companyDetails = companyDetails;
-    } else if (accountType === 'student') {
+    } else if (accountType === 'student' && studentDetails && Object.keys(studentDetails).length > 0) {
       userData.studentDetails = studentDetails;
-    } else if (accountType === 'individual') {
+    } else if (accountType === 'individual' && individualDetails && Object.keys(individualDetails).length > 0) {
       userData.individualDetails = individualDetails;
     }
 
-    // 🏗️ Create user
+    // 🏗️ Create and save user
     const newUser = new User(userData);
     await newUser.save();
 
@@ -57,13 +74,14 @@ export const signup = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Signup error:", error.message);
+    console.error("Signup error:", error);
     res.status(400).json({
       success: false,
       message: error.message || "Something went wrong"
     });
   }
 };
+
 
 
 
