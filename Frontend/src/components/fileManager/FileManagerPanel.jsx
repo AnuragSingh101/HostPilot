@@ -5,6 +5,7 @@ import FileTable from '../FileTable';
 import Breadcrumb from './Breadcrumb';
 import EditorModal from './EditorModal';
 import FileActionsModal from './FileActionsModal';
+import UploadModal from './UploadModal';
 
 const FileManagerPanel = ({ credentials, onBack }) => {
   const [files, setFiles] = useState([]);
@@ -18,6 +19,7 @@ const FileManagerPanel = ({ credentials, onBack }) => {
   const [actionName, setActionName] = useState('');
   const [actionFile, setActionFile] = useState(null);
   const [modalError, setModalError] = useState('');
+  const [uploadModalOpen, setUploadModalOpen] = useState(false); // ⬅ Upload modal state
 
   // -------------------------------
   // Fetch File List
@@ -126,66 +128,43 @@ const FileManagerPanel = ({ credentials, onBack }) => {
   };
 
   // -------------------------------
-  // Delete
+  // Delete with instant UI + backend refresh
   // -------------------------------
-  // -------------------------------
-// Delete
-// -------------------------------
-// -------------------------------
-// Delete with instant UI + backend refresh
-// -------------------------------
-const handleDelete = async (file) => {
-  if (window.confirm(`Delete "${file.name}"?`)) {
-    // 1️⃣ Optimistic UI update
-    setFiles((prev) => prev.filter((f) => f.name !== file.name));
-
-    try {
-      const res = await fetch('http://localhost:5000/api/files/delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ credentials, path: `${currentPath}/${file.name}` }),
-      });
-
-      // 2️⃣ Backend confirmation
-      if (!res.ok) {
-        const data = await res.json();
-        alert(data.message || "Delete failed");
-        // ⏪ If backend failed, reload original list
+  const handleDelete = async (file) => {
+    if (window.confirm(`Delete "${file.name}"?`)) {
+      setFiles((prev) => prev.filter((f) => f.name !== file.name)); // Optimistic UI update
+      try {
+        const res = await fetch('http://localhost:5000/api/files/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ credentials, path: `${currentPath}/${file.name}` }),
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          alert(data.message || "Delete failed");
+          fetchFileList(currentPath);
+          return;
+        }
         fetchFileList(currentPath);
-        return;
+      } catch (err) {
+        console.error("Delete failed:", err);
+        fetchFileList(currentPath);
       }
-
-      // 3️⃣ Always refresh after deletion to sync
-      fetchFileList(currentPath);
-
-    } catch (err) {
-      console.error("Delete failed:", err);
-      fetchFileList(currentPath); // fallback refresh
     }
-  }
-};
-
-
+  };
 
   // -------------------------------
-  // Modal Submit (fixed to close & refresh immediately)
+  // Modal Submit (close & refresh immediately)
   // -------------------------------
   const handleActionModalSubmit = () => {
     setModalError('');
-  
-    // ✅ Close modal right away
-    setActionModalOpen(false);
-  
-    // ✅ Optimistically refresh immediately
+    setActionModalOpen(false); // Close modal
     setTimeout(() => {
-      fetchFileList(currentPath);
+      fetchFileList(currentPath); // refresh after close
     }, 100);
-  
-    if (!actionName.trim()) {
-      return; // No name entered, nothing to create/rename
-    }
-  
-    // Perform the action asynchronously (no blocking)
+
+    if (!actionName.trim()) return;
+
     (async () => {
       try {
         if (actionType === 'create') {
@@ -210,21 +189,43 @@ const handleDelete = async (file) => {
             }),
           });
         }
-  
-        // Optional: refresh again after server finishes
         fetchFileList(currentPath);
       } catch (err) {
         console.error("Action failed:", err);
       }
     })();
   };
-  
 
   // -------------------------------
-  // Upload placeholder
+  // Upload functions
   // -------------------------------
   const handleUpload = () => {
-    alert("Upload not implemented.");
+    setUploadModalOpen(true);
+  };
+
+  const handleFileUpload = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('path', currentPath);
+      formData.append('credentials', JSON.stringify(credentials));
+
+      const res = await fetch('http://localhost:5000/api/files/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || 'Upload failed');
+      } else {
+        setUploadModalOpen(false);
+        fetchFileList(currentPath);
+      }
+    } catch (err) {
+      console.error('Upload error:', err);
+      alert('Error uploading file');
+    }
   };
 
   // -------------------------------
@@ -291,6 +292,13 @@ const handleDelete = async (file) => {
         onSubmit={handleActionModalSubmit}
         onClose={() => setActionModalOpen(false)}
         error={modalError}
+      />
+
+      {/* Upload Modal */}
+      <UploadModal
+        isOpen={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        onUpload={handleFileUpload}
       />
     </div>
   );

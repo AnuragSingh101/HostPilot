@@ -4,9 +4,10 @@ import {
   createFileOrFolder, 
   deletePath, 
   renamePath,
-  readFile,     // ⬅ Added for reading file contents
-  saveFile      // ⬅ Added for saving edited file contents
-} from '../controllers/fileManagerController.js'; // ✅ Use updated controller
+  readFile,    // ⬅ For reading file contents
+  saveFile,    // ⬅ For saving edited file contents
+  uploadFile   // ⬅ NEW: For uploading files to server
+} from '../controllers/fileManagerController.js';
 
 const router = express.Router();
 
@@ -27,5 +28,8 @@ router.post('/read', readFile);
 
 // 💾 Save/update file contents
 router.post('/save', saveFile);
+
+// 📤 Upload file
+router.post('/upload', ...uploadFile); // spread because uploadFile is [multerMiddleware, handler]
 
 export default router;
