@@ -19,7 +19,11 @@ const FileManagerPanel = ({ credentials, onBack }) => {
   const [actionName, setActionName] = useState('');
   const [actionFile, setActionFile] = useState(null);
   const [modalError, setModalError] = useState('');
-  const [uploadModalOpen, setUploadModalOpen] = useState(false); // ⬅ Upload modal state
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]); // ✅ Multi-select state
+  const [clipboardItems, setClipboardItems] = useState([]);
+  const [clipboardAction, setClipboardAction] = useState(null); // 'cut' or 'copy'
+
 
   // -------------------------------
   // Fetch File List
@@ -36,6 +40,7 @@ const FileManagerPanel = ({ credentials, onBack }) => {
       if (Array.isArray(data.files)) {
         setFiles(data.files);
         setCurrentPath(targetPath);
+        setSelectedItems([]); // clear selection on refresh
       }
     } catch (err) {
       console.error("Failed to list files:", err);
@@ -128,11 +133,11 @@ const FileManagerPanel = ({ credentials, onBack }) => {
   };
 
   // -------------------------------
-  // Delete with instant UI + backend refresh
+  // Delete
   // -------------------------------
   const handleDelete = async (file) => {
     if (window.confirm(`Delete "${file.name}"?`)) {
-      setFiles((prev) => prev.filter((f) => f.name !== file.name)); // Optimistic UI update
+      setFiles((prev) => prev.filter((f) => f.name !== file.name));
       try {
         const res = await fetch('http://localhost:5000/api/files/delete', {
           method: 'POST',
@@ -154,13 +159,136 @@ const FileManagerPanel = ({ credentials, onBack }) => {
   };
 
   // -------------------------------
-  // Modal Submit (close & refresh immediately)
+  // Download File
+  // -------------------------------
+  const handleDownloadFile = async (file) => {
+    try {
+      const res = await fetch('http://localhost:5000/api/files/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credentials, path: `${currentPath}/${file.name}` }),
+      });
+      if (!res.ok) {
+        alert('Failed to download');
+        return;
+      }
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Network error while downloading file');
+    }
+  };
+
+  // -------------------------------
+  // Compress Selected
+  // -------------------------------
+  const handleCompressSelected = async () => {
+    if (!selectedItems.length) {
+      alert('Please select files or folders to compress');
+      return;
+    }
+  
+    try {
+      const res = await fetch('http://localhost:5000/api/files/compress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          credentials,
+          currentPath,
+          items: selectedItems
+        }),
+      });
+  
+      const data = await res.json();
+  
+      if (!res.ok) {
+        alert(data.error || 'Compression failed');
+        return;
+      }
+  
+      // ✅ Explicit success feedback
+      alert(`Archive created: ${data.archive.name}`);
+  
+      // ✅ Only refresh if user agrees
+      const refreshNow = window.confirm(
+        'Compression complete.\nDo you want to refresh the file list to see the new archive?'
+      );
+      if (refreshNow) {
+        fetchFileList(currentPath);
+      }
+      // ❌ If user clicks cancel, stay on current view & keep selections
+  
+    } catch (err) {
+      console.error('Compression error:', err);
+      alert('Error compressing files');
+    }
+  };
+
+
+
+  // -------------------------------  
+  // cut copy and past files between directories 
+  // -------------------------------
+  
+  const handleCutSelected = () => {
+    if (!selectedItems.length) return alert('No items selected to cut');
+    setClipboardItems(selectedItems.map(name => `${currentPath}/${name}`));
+    setClipboardAction('cut');
+    setSelectedItems([]);
+  };
+  
+  const handleCopySelected = () => {
+    if (!selectedItems.length) return alert('No items selected to copy');
+    setClipboardItems(selectedItems.map(name => `${currentPath}/${name}`));
+    setClipboardAction('copy');
+    setSelectedItems([]);
+  };
+  
+  const handlePaste = async () => {
+    if (!clipboardItems.length || !clipboardAction) {
+      return alert('Clipboard is empty');
+    }
+    try {
+      const endpoint = clipboardAction === 'cut' ? 'move' : 'copy';
+      const res = await fetch(`http://localhost:5000/api/files/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          credentials,
+          items: clipboardItems,
+          destination: currentPath,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) return alert(data.error || 'Operation failed');
+      alert(`${clipboardAction === 'cut' ? 'Moved' : 'Copied'} successfully`);
+      setClipboardItems([]);
+      setClipboardAction(null);
+      fetchFileList(currentPath);
+    } catch (err) {
+      console.error(err);
+      alert('Error while pasting items');
+    }
+  };
+  
+
+
+
+  // -------------------------------
+  // Modal Submit (close & refresh)
   // -------------------------------
   const handleActionModalSubmit = () => {
     setModalError('');
-    setActionModalOpen(false); // Close modal
+    setActionModalOpen(false);
     setTimeout(() => {
-      fetchFileList(currentPath); // refresh after close
+      fetchFileList(currentPath);
     }, 100);
 
     if (!actionName.trim()) return;
@@ -197,7 +325,7 @@ const FileManagerPanel = ({ credentials, onBack }) => {
   };
 
   // -------------------------------
-  // Upload functions
+  // Upload
   // -------------------------------
   const handleUpload = () => {
     setUploadModalOpen(true);
@@ -242,12 +370,11 @@ const FileManagerPanel = ({ credentials, onBack }) => {
   // -------------------------------
   return (
     <div className="p-6 bg-gray-900 rounded-xl shadow-lg border border-gray-800 space-y-5">
-      
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-white flex items-center gap-2">📂 File Manager</h2>
-        <button 
-          onClick={onBack} 
+        <button
+          onClick={onBack}
           className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg shadow transition"
         >
           <ArrowLeft size={18} /> Back to Terminal
@@ -259,19 +386,28 @@ const FileManagerPanel = ({ credentials, onBack }) => {
 
       {/* Toolbar */}
       <Toolbar
-        onUpload={handleUpload}
-        onCreateFile={handleCreateFile}
-        onCreateFolder={handleCreateFolder}
-        onRefresh={() => fetchFileList(currentPath)}
+          onUpload={handleUpload}
+          onCreateFile={handleCreateFile}
+          onCreateFolder={handleCreateFolder}
+          onRefresh={() => fetchFileList(currentPath)}
+          onCompressSelected={handleCompressSelected}
+          onCutSelected={handleCutSelected}        // NEW
+          onCopySelected={handleCopySelected}      // NEW
+          onPaste={handlePaste}                    // NEW
+          selectedItems={selectedItems}
+          canPaste={!!clipboardItems.length}       // NEW
       />
 
       {/* File Table */}
       <FileTable
         files={files}
+        selectedItems={selectedItems} // ✅ pass selection state
+        onSelectionChange={setSelectedItems} // ✅ update selection
         onDelete={handleDelete}
         onRename={handleRename}
         onNavigate={handleNavigate}
         onOpen={handleOpenFile}
+        onDownload={handleDownloadFile}
       />
 
       {/* Editor */}
